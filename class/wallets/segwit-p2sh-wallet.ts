@@ -6,6 +6,7 @@ import ecc from '../../blue_modules/noble_ecc';
 import { LegacyWallet } from './legacy-wallet';
 import { CreateTransactionResult, CreateTransactionUtxo } from './types';
 import { hexToUint8Array } from '../../blue_modules/uint8array-extras';
+import { signPsbtInputWithUnifiedSighash } from '../../blue_modules/unifiedSighash';
 
 const ECPair = ECPairFactory(ecc);
 
@@ -145,7 +146,7 @@ export class SegwitP2SHWallet extends LegacyWallet {
     if (!skipSigning) {
       // skiping signing related stuff
       for (let cc = 0; cc < c; cc++) {
-        psbt.signInput(cc, keyPair);
+        signPsbtInputWithUnifiedSighash(psbt, cc, keyPair);
       }
     }
 

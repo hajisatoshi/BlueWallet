@@ -18,6 +18,12 @@ import { AbstractHDWallet } from './abstract-hd-wallet';
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, Transaction, Utxo } from './types';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
 import { isValidBech32Address } from '../../util/isValidBech32Address.ts';
+import {
+  hashForUnifiedSighash,
+  SIGHASH_UNIFIED,
+  signPsbtInputWithUnifiedSighash,
+  signPsbtInputHDWithUnifiedSighash,
+} from '../../blue_modules/unifiedSighash';
 
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -1161,7 +1167,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
             keypairs[cc].tweak(bitcoin.crypto.taggedHash('TapTweak', psbt.data.inputs[cc].tapInternalKey as Uint8Array)),
           );
         } else {
-          psbt.signInput(cc, keypairs[cc]);
+          signPsbtInputWithUnifiedSighash(psbt, cc, keypairs[cc]);
         }
       }
     }
@@ -1374,7 +1380,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
 
     for (let cc = 0; cc < psbt.inputCount; cc++) {
       try {
-        psbt.signInputHD(cc, hdRoot);
+        signPsbtInputHDWithUnifiedSighash(psbt, cc, hdRoot);
       } catch (e) {} // protects agains duplicate cosignings
 
       if (!psbt.inputHasHDKey(cc, hdRoot)) {
@@ -1388,7 +1394,7 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
           }
           const keyPair = ECPair.fromWIF(wif);
           try {
-            psbt.signInput(cc, keyPair);
+            signPsbtInputWithUnifiedSighash(psbt, cc, keyPair);
           } catch (e) {} // protects agains duplicate cosignings or if this output can't be signed with current wallet
         }
       }

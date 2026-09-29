@@ -8,9 +8,7 @@ export interface BlockExplorer {
 }
 
 export const BLOCK_EXPLORERS: { [key: string]: BlockExplorer } = {
-  default: { key: 'default', name: 'Mempool.space', url: 'https://mempool.space' },
-  blockchair: { key: 'blockchair', name: 'Blockchair', url: 'https://blockchair.com/bitcoin' },
-  blockstream: { key: 'blockstream', name: 'Blockstream.info', url: 'https://blockstream.info' },
+  default: { key: 'default', name: 'Mempool Guide (BLAKE2b)', url: 'https://mempool.guide' },
   custom: { key: 'custom', name: 'Custom', url: '' }, // Custom URL will be handled separately
 };
 

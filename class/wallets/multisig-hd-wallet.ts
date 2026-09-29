@@ -12,6 +12,7 @@ import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
 import { decodeUR } from '../../blue_modules/ur';
 import { AbstractHDElectrumWallet } from './abstract-hd-electrum-wallet';
+import { signPsbtInputWithUnifiedSighash, signPsbtInputHDWithUnifiedSighash } from '../../blue_modules/unifiedSighash';
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo } from './types';
 import {
   uint8ArrayToHex,
@@ -1033,7 +1034,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
 
       for (let cc = 0; cc < c; cc++) {
         for (const hdRoot of hdRoots) {
-          psbt.signInputHD(cc, hdRoot);
+          signPsbtInputHDWithUnifiedSighash(psbt, cc, hdRoot);
         }
       }
     }
@@ -1186,7 +1187,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
     for (let cc = 0; cc < psbt.inputCount; cc++) {
       for (const { cosignerIndex, hdRoot } of hdRoots) {
         try {
-          psbt.signInputHD(cc, hdRoot);
+          signPsbtInputHDWithUnifiedSighash(psbt, cc, hdRoot);
         } catch (_) {} // protects agains duplicate cosignings
 
         if (!psbt.inputHasHDKey(cc, hdRoot)) {
@@ -1213,7 +1214,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
             if (child.privateKey && psbt.inputHasPubkey(cc, child.publicKey)) {
               const keyPair = ECPair.fromPrivateKey(child.privateKey);
               try {
-                psbt.signInput(cc, keyPair);
+                signPsbtInputWithUnifiedSighash(psbt, cc, keyPair);
               } catch (_) {}
             }
           }

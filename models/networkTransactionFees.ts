@@ -46,6 +46,17 @@ export default class NetworkTransactionFees {
       return new NetworkTransactionFee(response.fast, response.medium, response.slow);
     } catch (err) {
       console.warn(err);
+      try {
+        const res = await fetch('https://mempool.guide/api/v1/fees/recommended');
+        if (res.ok) {
+          const json = await res.json();
+          return new NetworkTransactionFee(
+            json.fastestFee || 2,
+            json.halfHourFee || 1.5,
+            json.hourFee || 1,
+          );
+        }
+      } catch (_) {}
       return new NetworkTransactionFee(2, 1.5, 1);
     }
   }

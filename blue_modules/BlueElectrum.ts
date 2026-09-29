@@ -16,6 +16,7 @@ import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { triggerWarningHapticFeedback } from './hapticFeedback';
 import { AlertButton } from 'react-native';
 import { uint8ArrayToHex, stringToUint8Array, hexToUint8Array } from './uint8array-extras/index';
+import { validateHeaderLength, extractTimestamp, isV2Header } from './blake2bHeader';
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');
@@ -87,13 +88,9 @@ export const ELECTRUM_SSL_PORT = 'electrum_ssl_port';
 export const ELECTRUM_SERVER_HISTORY = 'electrum_server_history';
 const ELECTRUM_CONNECTION_DISABLED = 'electrum_disabled';
 const storageKey = 'ELECTRUM_PEERS';
-const defaultPeer = { host: 'electrum1.bluewallet.io', ssl: 443 };
+const defaultPeer: Peer = { host: '127.0.0.1', tcp: 50001 };
 export const hardcodedPeers: Peer[] = [
-  { host: 'mainnet.foundationdevices.com', ssl: 50002 },
-  { host: 'bitcoin.lu.ke', ssl: 50002 },
-  // { host: 'electrum.jochen-hoenicke.de', ssl: '50006' },
-  { host: 'electrum1.bluewallet.io', ssl: 443 },
-  { host: 'electrum.acinq.co', ssl: 50002 },
+  { host: '127.0.0.1', tcp: 50001 },
 ];
 
 export const suggestedServers: Peer[] = hardcodedPeers.map(peer => ({
@@ -1604,7 +1601,7 @@ export async function getConfirmedBlockHeight(txHash: string): Promise<Confirmed
 
 /**
  * Fetches actual block header timestamps from the Electrum server for the given heights.
- * Parses the 80-byte hex-encoded header to extract the 4-byte LE timestamp at byte offset 68.
+ * Supports both classic 80-byte headers and v2 164-byte BLAKE2b headers.
  */
 export async function getBlockTimestamps(heights: number[]): Promise<Record<number, number>> {
   if (!mainClient) throw new Error('Electrum client is not connected');
@@ -1612,16 +1609,8 @@ export async function getBlockTimestamps(heights: number[]): Promise<Record<numb
   const promises = heights.map(async height => {
     try {
       const headerHex: string = await mainClient.blockchainBlock_header(height);
-      // timestamp is at bytes 68–71 of the 80-byte header (hex chars 136–143), little-endian uint32
-      const tsHex = headerHex.slice(136, 144);
-      /* eslint-disable no-bitwise */
-      const timestamp =
-        parseInt(tsHex.slice(0, 2), 16) |
-        (parseInt(tsHex.slice(2, 4), 16) << 8) |
-        (parseInt(tsHex.slice(4, 6), 16) << 16) |
-        ((parseInt(tsHex.slice(6, 8), 16) << 24) >>> 0);
-      /* eslint-enable no-bitwise */
-      result[height] = timestamp;
+      // Use our v2-aware header parser
+      result[height] = extractTimestamp(headerHex);
     } catch (e) {
       console.warn(`Failed to fetch block header for height ${height}:`, e);
     }

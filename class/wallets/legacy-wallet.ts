@@ -12,6 +12,7 @@ import type { HDSegwitBech32Wallet as HDSegwitBech32WalletT } from './hd-segwit-
 import { randomBytes } from '../rng';
 import { AbstractWallet } from './abstract-wallet';
 import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, Transaction, Utxo } from './types';
+import { signPsbtInputWithUnifiedSighash } from '../../blue_modules/unifiedSighash';
 const ECPair: ECPairAPI = ECPairFactory(ecc);
 bitcoin.initEccLib(ecc);
 
@@ -498,7 +499,7 @@ export class LegacyWallet extends AbstractWallet {
     if (!skipSigning && keyPair) {
       // skiping signing related stuff
       for (let cc = 0; cc < c; cc++) {
-        psbt.signInput(cc, keyPair);
+        signPsbtInputWithUnifiedSighash(psbt, cc, keyPair);
       }
     }
 
