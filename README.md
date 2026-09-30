@@ -1,137 +1,94 @@
-# BlueWallet - A Bitcoin & Lightning Wallet
+# Bluug Wallet - Bitcoin BLAKE2b & Lightning Wallet
 
-[![GitHub tag](https://img.shields.io/badge/dynamic/json.svg?url=https://raw.githubusercontent.com/BlueWallet/BlueWallet/master/package.json&query=$.version&label=Version)](https://github.com/BlueWallet/BlueWallet)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-![](https://img.shields.io/github/license/BlueWallet/BlueWallet.svg)
+<p align="center">
+  <img src="https://i.imgur.com/hHYJnMj.png" width="80%" alt="Bluug Wallet">
+</p>
 
-Thin Bitcoin Wallet.
-Built with React Native and Electrum.
+**Bluug Wallet** is a thin, open-source Bitcoin wallet built with React Native and Electrum, specifically tailored for the **Bitcoin BLAKE2b Hardfork** chain with native **Somali (Af-Soomaali)** localization.
 
-[![Appstore](https://bluewallet.io/uploads/app-store-badge-blue.svg)](https://itunes.apple.com/us/app/bluewallet-bitcoin-wallet/id1376878040?l=ru&ls=1&mt=8)
-[![Playstore](https://bluewallet.io/uploads/play-store-badge-blue.svg)](https://play.google.com/store/apps/details?id=io.bluewallet.bluewallet)
+---
 
-Website: [bluewallet.io](https://bluewallet.io)
+## ⚡ BLAKE2b Fork Features
 
-Community: [telegram group](https://t.me/bluewallet)
+* **Bitcoin BLAKE2b Chain Support**: Full compatibility with the post-fork consensus rules (activation height `961,640+`).
+* **164-Byte v2 Block Headers**: Custom header validation and timestamp extraction for BLAKE2b v2 proof-of-work block headers.
+* **Unified Sighash (`0x21`)**: Implements Bitcoin Knots PR #357 / v29.4.1 unified opt-in signature hash (`SIGHASH_ALL | SIGHASH_UNIFIED = 0x21`):
+  * Native SegWit (`HDSegwitBech32Wallet` / BIP84)
+  * Wrapped SegWit (`SegwitP2SHWallet` / BIP49)
+  * Legacy (`LegacyWallet` / BIP44 P2PKH)
+  * Multisig HD (`MultisigHDWallet` BIP45/48/87) & PSBT cosigning workflows
+* **Somali (Af-Soomaali) Translation**: Full native Somali localization across all screens and flows (*Boorsooyinka*, *Dirista*, *Helitaanka*, *Dhaqdhaqaaqyada*, *Dejinta*).
+* **Shulcrum Electrum Server**: Optimized for connection to [Shulcrum](https://github.com/hajisatoshi/Fulcrum) / Fulcrum Electrum servers on port `50001`.
+* **Mempool Guide Integration**: Default block explorer and fee estimation connected to [`https://mempool.guide`](https://mempool.guide).
 
-* Private keys never leave your device
-* Lightning Network supported
-* SegWit-first. Replace-By-Fee support
-* Encryption. Plausible deniability
-* And many more [features...](https://bluewallet.io/features)
+---
 
+## 🚀 Key Features
 
-<img src="https://i.imgur.com/hHYJnMj.png" width="100%">
+* **Self-Custody**: Private keys never leave your device.
+* **SegWit-first & Multi-type**: Native SegWit (Bech32), Wrapped SegWit (P2SH), Legacy, and Multisig vaults.
+* **PSBT & Hardware Support**: Air-gapped workflows, SeedQR, ColdCard, Cobo, Keystone, and Sparrow export/import.
+* **Security & Privacy**: Plausible deniability, biometric authentication, storage encryption, and Tor support.
+* **Multiple Languages**: 55+ languages supported including full Somali.
 
+---
 
-## BUILD & RUN IT
+## 🛠️ Build & Run
 
-Please refer to the engines field in package.json file for the minimum required versions of Node and npm. It is preferred that you use an even-numbered version of Node as these are LTS versions.
+### Prerequisites
 
-To view the version of Node and npm in your environment, run the following in your console:
+* Node.js (LTS version recommended, Node 20 / 22)
+* npm
+* Android Studio (for Android builds) or Xcode (for iOS builds)
 
-```
-node --version && npm --version
-```
-
-* In your console:
-
-```
-git clone https://github.com/BlueWallet/BlueWallet.git
+```bash
+# Clone the repository
+git clone -b blake2b-fork https://github.com/hajisatoshi/BlueWallet.git
 cd BlueWallet
+
+# Install dependencies
 npm install
 ```
 
-Please make sure that your console is running the most stable versions of npm and node (even-numbered versions).
+### Run on Android
 
-* To run on Android:
+```bash
+# Start the Metro bundler
+npm start
 
-You will now need to either connect an Android device to your computer or run an emulated Android device using AVD Manager which comes shipped with Android Studio. To run an emulator using AVD Manager:
-
-1. Download and run Android Studio
-2. Click on "Open an existing Android Studio Project"
-3. Open `build.gradle` file under `BlueWallet/android/` folder
-4. Android Studio will take some time to set things up. Once everything is set up, go to `Tools` -> `AVD Manager`.
-    * 📝 This option [may take some time to appear in the menu](https://stackoverflow.com/questions/47173708/why-avd-manager-options-are-not-showing-in-android-studio) if you're opening the project in a freshly-installed version of Android Studio.
-5. Click on "Create Virtual Device..." and go through the steps to create a virtual device
-6. Launch your newly created virtual device by clicking the `Play` button under `Actions` column
-
-Once you connected an Android device or launched an emulator, run this:
-
-```
+# In another terminal window:
 npx react-native run-android
 ```
 
-The above command will build the app and install it. Once you launch the app it will take some time for all of the dependencies to load. Once everything loads up, you should have the built app running.
-
-* To run on iOS:
-
-```
-npx pod-install
-npm start
-```
-
-In another terminal window within the BlueWallet folder:
-```
-npx react-native run-ios
-```
-**To debug BlueWallet on the iOS Simulator, you must choose a Rosetta-compatible iOS Simulator. This can be done by navigating to the Product menu in Xcode, selecting Destination Architectures, and then opting for "Show Both." This action will reveal the simulators that support Rosetta.
-**
-
-* To run on macOS using Mac Catalyst:
-
-```
-npx pod-install
-npm start
-```
-
-Open ios/BlueWallet.xcworkspace. Once the project loads, select the scheme/target BlueWallet. Click Run.
-
-## TESTS
+### Run on iOS
 
 ```bash
-npm run test
+npx pod-install
+npm start
+
+# In another terminal window:
+npx react-native run-ios
 ```
 
+---
 
-## LICENSE
+## 🧪 Tests
 
-MIT
+Run the full unit test suite including BLAKE2b unified sighash and header validation:
 
-## WANT TO CONTRIBUTE?
+```bash
+npm run unit
+```
 
-Grab an issue from [the backlog](https://github.com/BlueWallet/BlueWallet/issues), try to start or submit a PR, any doubts we will try to guide you. Contributors have a private telegram group, request access by email bluewallet@bluewallet.io
+Run specific BLAKE2b fork tests:
 
-## Translations
+```bash
+npx jest tests/unit/unifiedSighash.test.ts
+```
 
-We accept translations via [Transifex](https://explore.transifex.com/bluewallet/bluewallet/)
+---
 
-To participate you need to:
-1. Sign up to Transifex
-2. Find BlueWallet project
-3. Send join request
-4. After we accept your request you will be able to start translating! That's it!
+## 📜 Upstream & License
 
-Please note the values in curly braces should not be translated. These are the names of the variables that will be inserted into the translated string. For example, the original string `"{number} of {total}"` in Russian will be `"{number} из {total}"`.
-
-Transifex automatically creates Pull Request when language reaches 100% translation. We also trigger this by hand before each release, so don't worry if you can't translate everything, every word counts.
-
-### Vocabulary glossaries
-
-[`loc/vocabulary.md`](loc/vocabulary.md) + the per-language files under [`loc/vocabulary/`](loc/vocabulary/) are the canonical glossary of Bitcoin/Lightning terms (Wallet, Vault, Seed, Mnemonic, Passphrase, Multisig, Payment Code, Coin Control, …) and their chosen rendering in each locale, with the reasoning behind each choice and ⚠️ anti-meaning callouts (e.g. Passcode ≠ Password, Change-output ≠ verb "to change"). Use them as ground truth when translating by hand or when feeding `loc/<lang>.json` to an LLM — terminology consistency across screens is the difference between "looks translated" and "is correct for a Bitcoin wallet". When you change a shipped string, update the matching row in the same PR.
-
-## Q&A
-
-Builds automated and tested with BrowserStack
-
-<a href="https://www.browserstack.com/"><img src="https://i.imgur.com/syscHCN.png" width="160px"></a>
-
-Bugs reported via BugSnag
-
-<a href="https://www.bugsnag.com"><img src="https://images.typeform.com/images/QKuaAssrFCq7/image/default" width="160px"></a>
-
-
-## RESPONSIBLE DISCLOSURE
-
-Found critical bugs/vulnerabilities? Please email them bluewallet@bluewallet.io
-Thanks!
+Forked from [BlueWallet](https://github.com/BlueWallet/BlueWallet). 
+Licensed under the [MIT License](LICENSE).
