@@ -1,4 +1,4 @@
-# Bluug Wallet - Bitcoin BLAKE2b & Lightning Wallet
+# Bluug Wallet - Bitcoin BLAKE2b Wallet
 
 <p align="center">
   <img src="https://i.imgur.com/hHYJnMj.png" width="80%" alt="Bluug Wallet">
@@ -18,8 +18,11 @@
   * Legacy (`LegacyWallet` / BIP44 P2PKH)
   * Multisig HD (`MultisigHDWallet` BIP45/48/87) & PSBT cosigning workflows
 * **Somali (Af-Soomaali) Translation**: Full native Somali localization across all screens and flows (*Boorsooyinka*, *Dirista*, *Helitaanka*, *Dhaqdhaqaaqyada*, *Dejinta*).
+* **Hardware Wallet (SeedSigner)**: Air-gapped camera signing, animated QR, SeedQR, and PSBT workflows compatible with **SeedSigner BLAKE2b firmware**.
 * **Shulcrum Electrum Server**: Optimized for connection to [Shulcrum](https://github.com/hajisatoshi/Fulcrum) / Fulcrum Electrum servers on port `50001`.
 * **Mempool Guide Integration**: Default block explorer and fee estimation connected to [`https://mempool.guide`](https://mempool.guide).
+
+> ℹ️ **Note on Lightning**: Lightning Network support is currently disabled / in development for the BLAKE2b chain. The wallet operates strictly in on-chain mode.
 
 ---
 
@@ -27,7 +30,7 @@
 
 * **Self-Custody**: Private keys never leave your device.
 * **SegWit-first & Multi-type**: Native SegWit (Bech32), Wrapped SegWit (P2SH), Legacy, and Multisig vaults.
-* **PSBT & Hardware Support**: Air-gapped workflows, SeedQR, ColdCard, Cobo, Keystone, and Sparrow export/import.
+* **Air-Gapped PSBT Signing**: Full animated QR and SeedQR support for SeedSigner hardware signer.
 * **Security & Privacy**: Plausible deniability, biometric authentication, storage encryption, and Tor support.
 * **Multiple Languages**: 55+ languages supported including full Somali.
 
