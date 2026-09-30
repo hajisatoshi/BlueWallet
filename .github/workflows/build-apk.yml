@@ -55,11 +55,11 @@ jobs:
 
       - name: Configure Git & Install Dependencies
         run: |
+          echo "allow-git=all" > ~/.npmrc
           git config --global url."https://github.com/".insteadOf "git@github.com:"
           git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
           git config --global url."https://github.com/".insteadOf "git://github.com/"
-          npm config set allow-git all
-          npm install
+          npm ci || npm install --legacy-peer-deps || npm install
 
       - name: Generate Android Debug Keystore
         run: |
