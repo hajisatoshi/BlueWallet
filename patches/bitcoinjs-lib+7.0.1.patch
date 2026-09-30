@@ -1,0 +1,18 @@
+diff --git a/node_modules/bitcoinjs-lib/src/cjs/script.cjs b/node_modules/bitcoinjs-lib/src/cjs/script.cjs
+index 0000000..1111111 100644
+--- a/node_modules/bitcoinjs-lib/src/cjs/script.cjs
++++ b/node_modules/bitcoinjs-lib/src/cjs/script.cjs
+@@ -321,3 +321,3 @@ exports.isDefinedHashType = isDefinedHashType;
+ function isDefinedHashType(hashType) {
+-  const hashTypeMod = hashType & ~0x80;
++  const hashTypeMod = hashType & ~0xa0;
+   return hashTypeMod > 0x00 && hashTypeMod < 0x04;
+diff --git a/node_modules/bitcoinjs-lib/src/esm/script.js b/node_modules/bitcoinjs-lib/src/esm/script.js
+index 0000000..1111111 100644
+--- a/node_modules/bitcoinjs-lib/src/esm/script.js
++++ b/node_modules/bitcoinjs-lib/src/esm/script.js
+@@ -259,3 +259,3 @@ export { compile, decompile, isCanonicalPubKey, isDefinedHashType, isPushOnly, t
+ export function isDefinedHashType(hashType) {
+-  const hashTypeMod = hashType & ~0x80;
++  const hashTypeMod = hashType & ~0xa0;
+   return hashTypeMod > 0x00 && hashTypeMod < 0x04;

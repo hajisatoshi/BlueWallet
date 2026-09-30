@@ -81,9 +81,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "io.bluewallet.bluewallet"
+    namespace "io.bluewallet.blake2b"
     defaultConfig {
-        applicationId "io.bluewallet.bluewallet"
+        applicationId "io.bluewallet.blake2b"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -26,15 +26,11 @@
  * v2 headers have the top bit of the version word set.
  */
 export function isV2Header(headerHex: string): boolean {
-  // Version is the first 8 hex chars (4 bytes LE)
-  const versionHex = headerHex.slice(0, 8);
-  // Parse as little-endian uint32 and check bit 31 (top bit)
-  const version =
-    parseInt(versionHex.slice(6, 8), 16) |
-    (parseInt(versionHex.slice(4, 6), 16) << 8) |
-    (parseInt(versionHex.slice(2, 4), 16) << 16) |
-    (parseInt(versionHex.slice(0, 2), 16) << 24);
-  return !!(version & 0x80000000);
+  if (headerHex.length < 8) return false;
+  // Version is the first 8 hex chars (4 bytes LE).
+  // The most significant byte is bytes[3], which is hex chars 6..7.
+  const msb = parseInt(headerHex.slice(6, 8), 16);
+  return (msb & 0x80) !== 0;
 }
 
 /**

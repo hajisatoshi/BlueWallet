@@ -48,14 +48,14 @@ function writeVarInt(buffer: Uint8Array, offset: number, value: number): number 
     return offset + 5;
   } else {
     tools.writeUInt8(buffer, offset, 0xff);
-    tools.writeBigUInt64(buffer, offset + 1, BigInt(value), 'LE');
+    tools.writeUInt64(buffer, offset + 1, BigInt(value), 'LE');
     return offset + 9;
   }
 }
 
 function writeVarSlice(buffer: Uint8Array, offset: number, slice: Uint8Array): number {
   offset = writeVarInt(buffer, offset, slice.length);
-  tools.copy(slice, 0, slice.length, buffer, offset);
+  buffer.set(slice, offset);
   return offset + slice.length;
 }
 
@@ -122,7 +122,7 @@ export function hashForUnifiedSighash(
       const buf = new Uint8Array(36 * tx.ins.length);
       let off = 0;
       for (const txIn of tx.ins) {
-        tools.copy(txIn.hash, 0, 32, buf, off);
+        buf.set(txIn.hash.subarray(0, 32), off);
         off += 32;
         tools.writeUInt32(buf, off, txIn.index, 'LE');
         off += 4;
@@ -135,7 +135,7 @@ export function hashForUnifiedSighash(
       const buf = new Uint8Array(8 * values.length);
       let off = 0;
       for (const val of values) {
-        tools.writeBigInt64(buf, off, val, 'LE');
+        tools.writeInt64(buf, off, val, 'LE');
         off += 8;
       }
       hashAmounts = sha256(buf);
@@ -170,7 +170,7 @@ export function hashForUnifiedSighash(
     const buf = new Uint8Array(outSize);
     let off = 0;
     for (const out of tx.outs) {
-      tools.writeBigInt64(buf, off, out.value, 'LE');
+      tools.writeInt64(buf, off, out.value, 'LE');
       off += 8;
       off = writeVarSlice(buf, off, out.script);
     }
@@ -179,7 +179,7 @@ export function hashForUnifiedSighash(
     const out = tx.outs[inIndex];
     const buf = new Uint8Array(8 + varSliceSize(out.script));
     let off = 0;
-    tools.writeBigInt64(buf, off, out.value, 'LE');
+    tools.writeInt64(buf, off, out.value, 'LE');
     off += 8;
     writeVarSlice(buf, off, out.script);
     hashOutputs = sha256(buf);
@@ -207,36 +207,36 @@ export function hashForUnifiedSighash(
   off += 4;
 
   if (!isAnyoneCanPay) {
-    tools.copy(hashPrevouts, 0, 32, msg, off);
+    msg.set(hashPrevouts, off);
     off += 32;
 
-    tools.copy(hashAmounts, 0, 32, msg, off);
+    msg.set(hashAmounts, off);
     off += 32;
 
-    tools.copy(hashScripts, 0, 32, msg, off);
+    msg.set(hashScripts, off);
     off += 32;
 
-    tools.copy(hashSequences, 0, 32, msg, off);
+    msg.set(hashSequences, off);
     off += 32;
   }
 
   // sha_outputs
   if (baseType === SIGHASH_ALL) {
-    tools.copy(hashOutputs, 0, 32, msg, off);
+    msg.set(hashOutputs, off);
     off += 32;
   } else if (isSingle) {
-    tools.copy(hashOutputs, 0, 32, msg, off);
+    msg.set(hashOutputs, off);
     off += 32;
   }
 
   // Input info
   if (isAnyoneCanPay) {
-    tools.copy(tx.ins[inIndex].hash, 0, 32, msg, off);
+    msg.set(tx.ins[inIndex].hash.subarray(0, 32), off);
     off += 32;
     tools.writeUInt32(msg, off, tx.ins[inIndex].index, 'LE');
     off += 4;
 
-    tools.writeBigInt64(msg, off, values[inIndex], 'LE');
+    tools.writeInt64(msg, off, values[inIndex], 'LE');
     off += 8;
     off = writeVarSlice(msg, off, prevOutScripts[inIndex]);
 
@@ -262,17 +262,17 @@ export function hashForUnifiedSighash(
       const annexSize = varSliceSize(annex);
       const annexBuf = new Uint8Array(annexSize);
       writeVarSlice(annexBuf, 0, annex);
-      tools.copy(sha256(annexBuf), 0, 32, msg, off);
+      msg.set(sha256(annexBuf), off);
     } else {
-      tools.copy(ZERO, 0, 32, msg, off);
+      msg.set(ZERO, off);
     }
     off += 32;
 
     if (scriptType === 3) {
       if (tapLeafHash) {
-        tools.copy(tapLeafHash, 0, 32, msg, off);
+        msg.set(tapLeafHash, off);
       } else {
-        tools.copy(ZERO, 0, 32, msg, off);
+        msg.set(ZERO, off);
       }
       off += 32;
 
@@ -341,7 +341,10 @@ export function getPrevoutsFromPsbt(psbt: Psbt): { prevOutScripts: Uint8Array[];
       prevOutScripts.push(inp.witnessUtxo.script);
       values.push(inp.witnessUtxo.value);
     } else if (inp.nonWitnessUtxo) {
-      const utxoTx = inp.nonWitnessUtxo;
+      let utxoTx: any = inp.nonWitnessUtxo;
+      if (utxoTx instanceof Uint8Array) {
+        utxoTx = bitcoin.Transaction.fromBuffer(utxoTx);
+      }
       const outIdx = unsignedTx.ins[i].index;
       prevOutScripts.push(utxoTx.outs[outIdx].script);
       values.push(utxoTx.outs[outIdx].value);
