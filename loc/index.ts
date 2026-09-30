@@ -64,6 +64,7 @@ const languageLoaders: Record<Exclude<LangCode, 'en'>, () => LanguageDict> = {
   az: () => require('./az.json'),
   zu_ZA: () => require('./zu_ZA.json'),
   km: () => require('./km.json'),
+  so: () => require('./so.json'),
   hak: () => require('./hak.json'),
   lv: () => require('./lv.json'),
   eu: () => require('./eu.json'),

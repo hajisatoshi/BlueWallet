@@ -78,4 +78,17 @@ describe('BLAKE2b Fork & Unified Sighash', () => {
       assert.strictEqual(partialSigs[0].signature[partialSigs[0].signature.length - 1], 0x21);
     });
   });
+
+  describe('Somali Localization (Af-Soomaali)', () => {
+    it('provides Somali translations for key Bitcoin and wallet terms', () => {
+      const soJson = require('../../loc/so.json');
+      assert.ok(soJson);
+      assert.strictEqual(soJson._.cancel, 'Jooji');
+      assert.strictEqual(soJson.wallets.list_title, 'Boorsooyinka');
+      assert.strictEqual(soJson.wallets.add_title, 'Ku dar Boorso');
+      assert.strictEqual(soJson.send.header, 'Dir Lacag');
+      assert.strictEqual(soJson.receive.header, 'Hel Lacag');
+      assert.strictEqual(soJson.settings.header, 'Dejinta');
+    });
+  });
 });

@@ -72,6 +72,7 @@ const _availableLanguages = Object.freeze([
   { label: 'සිංහල (SI)', value: 'si_lk' },
   { label: 'ქართული (KA)', value: 'ka' },
   { label: 'ខ្មែរ (KM)', value: 'km' },
+  { label: 'Soomaali (SO)', value: 'so' },
   { label: '客家話 (HAK)', value: 'hak' },
   { label: '简体中文 (ZH-CN)', value: 'zh_cn' },
   { label: '繁體中文 (ZH-TW)', value: 'zh_tw' },
