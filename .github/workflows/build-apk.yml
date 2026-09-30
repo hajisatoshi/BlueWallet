@@ -23,11 +23,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Free disk space
+        shell: bash
+        run: |
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android/sdk/system-images || true
+          sudo rm -rf /usr/local/lib/android/sdk/emulator || true
+
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -43,12 +51,15 @@ jobs:
       - name: Accept Android Licenses & Install SDK Tools
         run: |
           yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-36" "platform-tools" "build-tools;36.0.0"
+          sdkmanager "platforms;android-36" "platform-tools" "build-tools;36.0.0" "ndk;28.2.13676358"
 
-      - name: Install npm dependencies
+      - name: Configure Git & Install Dependencies
         run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://github.com/".insteadOf "git://github.com/"
           npm config set allow-git all
-          npm install
+          npm ci --omit=dev --yes || npm install --yes
 
       - name: Generate Android Debug Keystore
         run: |
@@ -72,7 +83,7 @@ jobs:
           name: BluugWallet-blake2b-apk
           path: build_output/BluugWallet-blake2b-debug.apk
 
-      - name: Create GitHub Release (on tag or manual dispatch)
+      - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
