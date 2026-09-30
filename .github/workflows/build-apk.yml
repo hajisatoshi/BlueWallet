@@ -59,7 +59,7 @@ jobs:
           git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
           git config --global url."https://github.com/".insteadOf "git://github.com/"
           npm config set allow-git all
-          npm ci --omit=dev --yes || npm install --yes
+          npm install
 
       - name: Generate Android Debug Keystore
         run: |
